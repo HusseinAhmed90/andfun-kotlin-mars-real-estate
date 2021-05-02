@@ -55,7 +55,7 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
 
 //  (04) Add the binding adapter to show the MarsApi status in the ImageView and show/hide the view
 @BindingAdapter("marsApiStatus")
-fun bindStatus(statusImageView: ImageView, status: MarsApiStatus) {
+fun bindStatus(statusImageView: ImageView, status: MarsApiStatus?) {
     when(status) {
         MarsApiStatus.LOADING -> {
             statusImageView.visibility = View.VISIBLE
