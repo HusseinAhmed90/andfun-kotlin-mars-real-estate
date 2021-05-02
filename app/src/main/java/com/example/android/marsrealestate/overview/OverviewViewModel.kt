@@ -25,6 +25,9 @@ import com.example.android.marsrealestate.network.MarsProperty
 //import kotlinx.coroutines.CoroutineScope
 //import kotlinx.coroutines.Dispatchers
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 //  (01) Create a MarsApiStatus enum with the LOADING, ERROR, and DONE states
@@ -33,6 +36,10 @@ enum class MarsApiStatus { LOADING, ERROR, DONE}
  * The [ViewModel] that is attached to the [OverviewFragment].
  */
 class OverviewViewModel : ViewModel() {
+
+    private val viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
 
     // The internal MutableLiveData String that stores the most recent response status
     //  (02) Change _status to type MarsApiStatus
@@ -66,12 +73,12 @@ class OverviewViewModel : ViewModel() {
      */
     private fun getMarsRealEstateProperties() {
         //  (03) Set the correct status for LOADING, ERROR, and DONE
-        viewModelScope.launch {
+        coroutineScope.launch {
             try {
                 _status.value = MarsApiStatus.LOADING
-                val listResult = MarsApi.retrofitService.getPropertiesAsync()
+                val getPropertiesDeferred = MarsApi.retrofitService.getPropertiesDeferredAsync()
+                _properties.value = getPropertiesDeferred.await()
                 _status.value = MarsApiStatus.DONE
-                _properties.value = listResult
             } catch (e: Exception) {
                 _status.value = MarsApiStatus.ERROR
                 _properties.value = ArrayList()
