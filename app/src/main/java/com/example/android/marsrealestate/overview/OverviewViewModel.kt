@@ -73,12 +73,13 @@ class OverviewViewModel : ViewModel() {
      */
     private fun getMarsRealEstateProperties() {
         //  (03) Set the correct status for LOADING, ERROR, and DONE
+        _status.value = MarsApiStatus.LOADING
         coroutineScope.launch {
+            val getPropertiesDeferred = MarsApi.retrofitService.getPropertiesDeferredAsync()
             try {
-                _status.value = MarsApiStatus.LOADING
-                val getPropertiesDeferred = MarsApi.retrofitService.getPropertiesDeferredAsync()
-                _properties.value = getPropertiesDeferred.await()
+                val listResult = getPropertiesDeferred.await()
                 _status.value = MarsApiStatus.DONE
+                _properties.value = listResult
             } catch (e: Exception) {
                 _status.value = MarsApiStatus.ERROR
                 _properties.value = ArrayList()
